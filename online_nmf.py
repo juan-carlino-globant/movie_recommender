@@ -2,6 +2,7 @@ def training():
     import numpy as np
     import pandas as pd
     from sklearn.decomposition import NMF, TruncatedSVD
+    from sklearn.externals.joblib import parallel_backend
     # from time import clock
     '''
     Read data from "ratings.csv" and use SVD or NMF to factorize the users-items
@@ -32,8 +33,9 @@ def training():
     # factorize matrix (saved in "model")
     # model = NMF(n_components=latent_factors, init='random', random_state=0)
     model = TruncatedSVD(n_components=latent_factors, n_iter=5, random_state=0)
-    # users
-    model = model.fit(train)
+    with parallel_backend('threading'):
+        # users
+        model = model.fit(train)
     # movies
     H = model.components_
 
