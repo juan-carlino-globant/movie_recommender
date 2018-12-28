@@ -13,7 +13,6 @@ def training():
     # the number of ratings to read, recommendation to make and
     # latent dimensions for factorization
     n_ratings = 300000
-    numberOfRecos = 10
     latent_factors = 15
 
     data = None
@@ -24,14 +23,20 @@ def training():
         data = data[['userId', 'movieId', 'rating']]
     print("=> elapsed Dataset load: %s secs" % (t.interval))
 
-    R_df = data.pivot(index = 'userId', columns ='movieId', values = 'rating').fillna(0)
+    with Timer() as t:
+        data = data.pivot(index = 'userId', columns ='movieId', values = 'rating')
+    print("=> elapsed Dataset pivot: %s secs" % (t.interval))
+
+    with Timer() as t:
+        data = data.fillna(0)
+    print("=> elapsed Dataset fillna: %s secs" % (t.interval))
 
     # split data in train and test (currently uses everything as train)
-    n_total = R_df.shape[0]
+    n_total = data.shape[0]
     n_test = int(n_total*0.)
 
-    train = R_df.iloc[:n_total-n_test]
-    test = R_df.iloc[n_total-n_test:]
+    train = data.iloc[:n_total-n_test]
+    test = data.iloc[n_total-n_test:]
 
 
     # factorize matrix (saved in "model")
@@ -46,4 +51,4 @@ def training():
     # movies
     H = model.components_
 
-    return model, H, R_df
+    return model, H, data
