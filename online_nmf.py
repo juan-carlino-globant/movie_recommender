@@ -1,9 +1,10 @@
 def training():
     import numpy as np
     import pandas as pd
+    from utils import Timer
     from sklearn.decomposition import NMF, TruncatedSVD
     from sklearn.externals.joblib import parallel_backend
-    # from time import clock
+
     '''
     Read data from "ratings.csv" and use SVD or NMF to factorize the users-items
     matriz for recommendations
@@ -15,10 +16,13 @@ def training():
     numberOfRecos = 10
     latent_factors = 15
 
-    # read data from file to a table
-    data = pd.read_csv("ratings.csv")
-    data = data.iloc[0 : n_ratings]
-    data = data[['userId', 'movieId', 'rating']]
+    data = None
+    with Timer() as t:
+        # read data from file to a table
+        data = pd.read_csv("ratings.csv", dtype = {'userId':np.uint32,'movieId':np.uint16,'rating':np.uint8})
+        #data = data.iloc[0 : n_ratings]
+        data = data[['userId', 'movieId', 'rating']]
+    print("=> elapsed Dataset load: %s secs" % (t.interval))
 
     R_df = data.pivot(index = 'userId', columns ='movieId', values = 'rating').fillna(0)
 
@@ -33,9 +37,12 @@ def training():
     # factorize matrix (saved in "model")
     # model = NMF(n_components=latent_factors, init='random', random_state=0)
     model = TruncatedSVD(n_components=latent_factors, n_iter=5, random_state=0)
-    with parallel_backend('threading'):
-        # users
-        model = model.fit(train)
+    with Timer() as t:
+        with parallel_backend('threading'):
+            # users
+            model = model.fit(train)
+    print("=> elapsed algorithm fit: %s secs" % (t.interval))
+
     # movies
     H = model.components_
 

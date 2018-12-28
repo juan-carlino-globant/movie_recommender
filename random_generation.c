@@ -3,7 +3,7 @@
 #include <time.h>
 
 
-#define MOVIE_QTY           3000
+#define MOVIE_QTY           1000
 #define USER_QTY            2000000
 #define RATINGS_PER_USER    30
 
@@ -54,8 +54,8 @@ int main()
 
     // declaration of some vars
     int* movies;
-    float possible_ratings[10] = {0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0};
-    float usr_rats[RATINGS_PER_USER];
+    int possible_ratings[5] = {1, 2, 3, 4, 5};
+    int usr_rats[RATINGS_PER_USER];
 
     for (int usrId=1; usrId<=USER_QTY; usrId++)
     {
@@ -64,12 +64,12 @@ int main()
         // generate same amount of random samplings from the possible ratings list
         for (int i=0; i<RATINGS_PER_USER; i++)
         {
-            usr_rats[i] = possible_ratings[rand()%10];
+            usr_rats[i] = possible_ratings[rand()%5];
         }
         // print to csv
         for (int i=0; i<RATINGS_PER_USER; i++)
         {
-            fprintf(outfile,"%d,%d,%f\n",usrId,*(movies+i),usr_rats[0+i]);
+            fprintf(outfile,"%d,%d,%d\n",usrId,*(movies+i),usr_rats[0+i]);
         }
 
     }

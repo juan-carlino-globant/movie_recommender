@@ -1,3 +1,5 @@
+from utils import Timer
+
 def recom(numberOfRecos,model,UsrID,R_df,transformed_movies):
     '''
     takes the neares neighbors model (nbrs) and the matrix factorization
@@ -7,8 +9,11 @@ def recom(numberOfRecos,model,UsrID,R_df,transformed_movies):
     import pandas as pd
     from sklearn.neighbors import NearestNeighbors
 
+    nbrs = NearestNeighbors(n_neighbors=numberOfRecos, algorithm='ball_tree')
     # train a NN finder
-    nbrs = NearestNeighbors(n_neighbors=numberOfRecos, algorithm='ball_tree').fit(np.transpose(transformed_movies))
+    with Timer() as t:
+        nbrs = nbrs.fit(np.transpose(transformed_movies))
+    print("=> elapsed k-NN fit: %s secs" % (t.interval))
 
     def NN(user,items):
         newUser = model.transform(user)
@@ -22,7 +27,12 @@ def recom(numberOfRecos,model,UsrID,R_df,transformed_movies):
 
     test_usr = R_df.loc[UsrID]
     test_usr = test_usr.values.reshape(-1,test_usr.shape[0])
-    nu,dis,ind = NN(test_usr,transformed_movies)
+    u = None
+    dis = None
+    ind = None
+    with Timer() as t:
+        u,dis,ind = NN(test_usr,transformed_movies)
+    print("=> elapsed k-NN estimation %s secs" % (t.interval))
 
 
     movlist = pd.read_csv("movies.csv")
