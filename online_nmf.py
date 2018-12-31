@@ -1,42 +1,47 @@
+
+from surprise import SVD
+from surprise import Dataset
+from surprise import Reader
+
+import time
+import os
+
+# def movies():
+#     movlist = pd.read_csv("movies.csv")
+
+# def users():
+#     users = pd.read_csv("ratings.csv", usecols=['userId'])
+#     users = users.drop_duplicates(subset=['userId'], keep=False)
+
 def training():
-    import numpy as np
-    import pandas as pd
-    from sklearn.decomposition import NMF, TruncatedSVD
-    from sklearn.externals.joblib import parallel_backend
-    # from time import clock
-    '''
-    Read data from "ratings.csv" and use SVD or NMF to factorize the users-items
-    matriz for recommendations
-    '''
 
-    # the number of ratings to read, recommendation to make and
-    # latent dimensions for factorization
-    n_ratings = 300000
-    numberOfRecos = 10
-    latent_factors = 15
+    # path to dataset file
+    file_path = os.path.expanduser('./ratings.csv')
 
-    # read data from file to a table
-    data = pd.read_csv("ratings.csv")
-    data = data.iloc[0 : n_ratings]
-    data = data[['userId', 'movieId', 'rating']]
+    # As we're loading a custom dataset, we need to define a reader. In the
+    # movielens-100k dataset, each line has the following format:
+    # 'user item rating timestamp', separated by '\t' characters.
+    reader = Reader(line_format='user item rating', sep=',', rating_scale=(1, 5), skip_lines=1)
 
-    R_df = data.pivot(index = 'userId', columns ='movieId', values = 'rating').fillna(0)
+    start = time.time()
+    data = Dataset.load_from_file(file_path, reader=reader)
+    end = time.time()
+    print("=> elapsed Dataset load: %s secs" % (end - start))
 
-    # split data in train and test (currently uses everything as train)
-    n_total = R_df.shape[0]
-    n_test = int(n_total*0.)
+    algo = SVD()
+    # Retrieve the trainset.
+    trainset = data.build_full_trainset()
+    start = time.time()
+    algo.fit(trainset)
+    end = time.time()
+    print("=> elapsed algorithm fit: %s secs" % (end - start))
+    #cross_validate(algo, data, measures=['RMSE', 'MAE'], cv=5, verbose=True)
 
-    train = R_df.iloc[:n_total-n_test]
-    test = R_df.iloc[n_total-n_test:]
+    # Than predict ratings for all pairs (u, i) that are NOT in the training set.
+    start = time.time()
+    testset = trainset.build_anti_testset()
+    predictions = algo.test(testset)
+    end = time.time()
+    print("=> elapsed predict time: %s secs" % (end - start))
 
-
-    # factorize matrix (saved in "model")
-    # model = NMF(n_components=latent_factors, init='random', random_state=0)
-    model = TruncatedSVD(n_components=latent_factors, n_iter=5, random_state=0)
-    with parallel_backend('threading'):
-        # users
-        model = model.fit(train)
-    # movies
-    H = model.components_
-
-    return model, H, R_df
+    return predictions

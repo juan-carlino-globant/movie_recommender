@@ -1,34 +1,18 @@
-def recom(numberOfRecos,model,UsrID,R_df,transformed_movies):
+from collections import defaultdict
+import pandas as pd
+
+def get_top_n(predictions, user, n=5):
+    '''Return the top-N recommendations for each user from a set of predictions.
     '''
-    takes the neares neighbors model (nbrs) and the matrix factorization
-    model (model) with the user ID, data and movies (in the latent dimensions)
-    '''
-    import numpy as np
-    import pandas as pd
-    from sklearn.neighbors import NearestNeighbors
 
-    # train a NN finder
-    nbrs = NearestNeighbors(n_neighbors=numberOfRecos, algorithm='ball_tree').fit(np.transpose(transformed_movies))
-
-    def NN(user,items):
-        newUser = model.transform(user)
-        distances, indices = nbrs.kneighbors(newUser)
-        return newUser,distances,indices
-
-    if (UsrID > R_df.shape[0]) or UsrID < 1:
-        error = '<User> variable must be between 1 and '+str(R_df.shape[0])
-        return error
-
-
-    test_usr = R_df.loc[UsrID]
-    test_usr = test_usr.values.reshape(-1,test_usr.shape[0])
-    nu,dis,ind = NN(test_usr,transformed_movies)
-
+    user_est = [ (int(iid), est) for uid, iid, true_r, est, _ in predictions if uid  == user ]
+    user_est.sort(key=lambda x: x[1], reverse=True)
+    user_est = user_est[:n]
 
     movlist = pd.read_csv("movies.csv")
 
     recommendation = []
-    for index in ind[0]:
+    for index, _ in user_est:
         title = movlist.iloc[index]['title'].split('(')[0]
         recommendation.append(title[:-1])
 
