@@ -4,7 +4,7 @@
 
 
 #define MOVIE_QTY           1000
-#define USER_QTY            1200000
+#define USER_QTY            2000000
 #define RATINGS_PER_USER    30
 
 char* init_assign_map()
