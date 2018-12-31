@@ -42,3 +42,11 @@ It generates random movies Ids between 1 and 1000 for 1.000.000 users and 30 rat
 In linux:
 * compile the code with gcc: `gcc random_generation.c -o random_generation`. It works fine with gcc version 7.3.0.
 * run the executable file `./random_generation`. It will generate a file named *new_dataset* with columns with the format `userId,moviesId,ratings` and 30.000.000 rows.
+
+#### Benchmark
+The file mapping_test.py is made for funning a bencmark
+
+#### Usage
+The number of ratings, latent factors and iterations to be used for SVD can be set from the variables N_R, L_F and N_I which are lists, since the program calculates an average RMSE (for 10 different test-train sets) for every possible combination of the values in the lists.
+* run with python2.7.1: `python mapping_test.py`
+* It generates an output file called *benchmarking_SVD.csv* containing the input values of n_ratings,latent_factors,n_iterations and the results for the mean RMSE, its variance and the training time, 

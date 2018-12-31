@@ -12,12 +12,21 @@ Generates an API for the recommender, needs an user ID as input
 app = Flask(__name__)
 api = Api(app)
 
+# training parameters, shared with rmse calculator
+n_ratings = 30000
+latent_factors = 15
+n_iterations = 5
+
+# training matrix factorization
 training_start = time.time()
-model, movies, R_df= online_nmf.training()
+data, model, movies, R_df, test, users = online_nmf.training(n_ratings, latent_factors, n_iterations)
 training_end = time.time()
 print("Elapsed time for movie recommendation training: %.2f secs" % (training_end-training_start))
-categories, movies_data = online_clustering.dummy_classif()
 
+# classify movies by tag
+categories, movies_data = online_clustering.dummy_classif()
+# print RMSE for our trained model
+print(onlinereco.get_RMSE(R_df, test, model, movies, users, data, latent_factors, n_iterations))
 
 class Recommender(Resource):
     '''
@@ -31,7 +40,8 @@ class Recommender(Resource):
         args = parser.parse_args()
         user = int(args['UsrID'])
         nr = int(args['n_recos'])
-        return onlinereco.recom(nr,model,user,R_df,movies)
+        ret0 = onlinereco.recom(nr,model,user,R_df,movies)
+        return onlinereco.ind2mov( ret0 )
 
 class Categories(Resource):
     '''
@@ -54,4 +64,4 @@ api.add_resource(Categories, '/categs')
 
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)
