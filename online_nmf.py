@@ -1,6 +1,7 @@
 def training():
     import numpy as np
     import pandas as pd
+    import time
     from utils import Timer
     from sklearn.decomposition import NMF, TruncatedSVD
     from sklearn.externals.joblib import parallel_backend
@@ -41,12 +42,14 @@ def training():
 
     # factorize matrix (saved in "model")
     # model = NMF(n_components=latent_factors, init='random', random_state=0)
+    print("starting algorithm fitting...")
     model = TruncatedSVD(n_components=latent_factors, n_iter=5, random_state=0)
-    with Timer() as t:
-        with parallel_backend('threading'):
-            # users
-            model = model.fit(train)
-    print("=> elapsed algorithm fit: %s secs" % (t.interval))
+    start = time.time()
+    with parallel_backend('threading'):
+        # users
+        model = model.fit(train)
+    end = time.time()
+    print("=> elapsed algorithm fit: %s secs" % (end - start))
 
     # movies
     H = model.components_
