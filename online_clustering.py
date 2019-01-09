@@ -76,7 +76,7 @@ def dummy_classif():
 
 
 
-def dummy_reco(categorias, movies_data, n_recos=10, word='Father'):
+def dummy_reco(categorias, movies_data, labels, movies_ids, n_recos=10, word='Father'):
     word = word.lower()
 
 
@@ -116,16 +116,22 @@ def dummy_reco(categorias, movies_data, n_recos=10, word='Father'):
         max_cats = list(categorias.keys())[maxix]
         result.extend(list(set( movies[maxix] )))
         needed = n_recos-len(result)
-
+        # print("maxcat",max_cats)
+        # print("ranks",ranks)
+        # return 1, list([1,2])
         if (len(result) < n_recos):
-            # start appending movies qith the same genre, but with any title
+            # start appending movies with the same genre, but with any title
             count = 0
             out = False
             for i in range( len(movies_data['title']) ):
                 if out:
                     break
                 title = movies_data['title'].iloc[i]
-                if (max_cats in movies_data['genres'].iloc[i]) and not (title in result):
+                movie_id = movies_data['movieId'].iloc[i]
+                index, = np.where(movies_ids == movie_id)
+                index = index[0]
+
+                if (max_cats == labels[index]):
                     result.append(title)
                     count += 1
                 if count == needed:
@@ -140,3 +146,98 @@ def dummy_reco(categorias, movies_data, n_recos=10, word='Father'):
     # result = get_result(max_cats,ranks,result)
     max_cats,result = get_nearer(max_cats,ranks,movies_data,result)
     return max_cats,result[:n_recos]
+
+#------------------------------------------------------------------------------#
+
+import numpy as np
+import pandas as pd
+from sklearn.cluster import DBSCAN, KMeans
+from sklearn.preprocessing import MinMaxScaler
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+
+def cluster_MSD(centroids, labels, movies):
+    # centroid is nparray of shape (n_features,)
+    distances = [0. for _ in range(len(centroids))]
+    NMembers = [0. for _ in range(len(centroids))]
+    # print distances, NMembers
+
+    for i in range(len( movies )):
+        clustNmbr = labels[i]
+        # add square dist of that point to its centroid
+        distances[clustNmbr] += np.dot(movies[i],movies[i]) - 2.* np.dot(movies[i],centroids[clustNmbr]) + np.dot(centroids[clustNmbr],centroids[clustNmbr])
+        NMembers[clustNmbr] += 1.0
+
+    for i in range(len( centroids )):
+        distances[i] /= NMembers[i]
+
+    return distances
+
+
+
+
+def clusterer(items_rep):
+    # Load movies
+    # movies = np.load("train_movies-2000000ratings_35factors.npy")
+    movies = items_rep
+
+    # plot_movies_multidim(movies,0,1)
+    # movies = np.transpose(movies)
+    X = movies[:]
+
+    # normalising data
+    scaler = MinMaxScaler()
+    X_scaled = scaler.fit_transform(X)
+
+    # perform clustering
+    K = 20
+    clustering = KMeans(n_clusters=K).fit(X_scaled)
+
+    # print metrics
+    MSdist = cluster_MSD(clustering.cluster_centers_, clustering.labels_, X_scaled)
+    dist = 0.
+    for i in range(len( clustering.cluster_centers_ )):
+        dist += MSdist[i]/len( clustering.cluster_centers_ )
+    print ("mean distances to centroid for clusters", dist)
+    # print("Number of points",len(clustering.labels_))
+
+
+    return clustering.labels_
+
+
+
+def cluster_classif(items_rep,test_n_ratings):
+
+    file = pd.read_csv("movies.csv")
+    ratfile = pd.read_csv("ratings.csv")
+    ratfile = ratfile.iloc[:test_n_ratings]
+    # ratfile = ratfile[ table['rating']>2.5 ]
+    movies_ids = ratfile['movieId'].unique()
+    # movies_ids contains the ids of every mobie in the movies ndarray
+    movies_ids = np.sort(movies_ids)
+    # print(movies_ids)
+    # print("peliculas en lista de ids",len(movies_ids))
+
+
+    labels = clusterer(items_rep)
+    # print("puntos en ndarray:",len(labels))
+
+    generos = list( range(np.amax(labels)+1) )
+
+    # There are no names for categories for the time being
+    categorias = { x : [] for x in generos}
+
+    for i in range(len(file['title'])):
+        movie_id = file['movieId'].iloc[i]
+        if movie_id in movies_ids:
+            index, = np.where(movies_ids == movie_id)
+            index = index[0]
+            categorias[labels[index]].append(file['title'].iloc[i])
+    return categorias,file,labels,movies_ids
+
+
+
+# cats, file, lab, mids= cluster_classif()
+# t1,t2  =dummy_reco(cats, file, lab, mids, n_recos=10, word='man')
+# print (t1,t2)

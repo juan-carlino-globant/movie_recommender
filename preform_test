@@ -1,0 +1,124 @@
+# THREADS = 1
+*********
+ LIGHTFM TEST RESULTS
+
+Precision: train 0.51, test 0.08.
+AUC: train 0.95, test 0.92.
+*********
+Elapsed time for 100k set training: 3.37 secs
+Elapsed time for big set loading: 17.64 secs
+Elapsed time for big set training: 13.44 secs
+Elapsed time for big set testing: 33.95 secs
+*****
+Ratings big dataset:
+
+Precision: train 0.44, test 0.10.
+AUC: train 0.97, test 0.96.
+
+
+# THREADS = 2
+*********
+ LIGHTFM TEST RESULTS
+
+Precision: train 0.52, test 0.08.
+AUC: train 0.95, test 0.92.
+*********
+Elapsed time for 100k set training: 3.39 secs
+Elapsed time for big set loading: 17.31 secs
+Elapsed time for big set training: 8.31 secs
+Elapsed time for big set testing: 17.52 secs
+*****
+Ratings big dataset:
+
+Precision: train 0.42, test 0.10.
+AUC: train 0.97, test 0.96.
+
+
+# THREADS = 3
+*********
+ LIGHTFM TEST RESULTS
+
+Precision: train 0.52, test 0.08.
+AUC: train 0.95, test 0.92.
+*********
+Elapsed time for 100k set training: 3.47 secs
+Elapsed time for big set loading: 18.17 secs
+Elapsed time for big set training: 6.19 secs
+Elapsed time for big set testing: 12.24 secs
+*****
+Ratings big dataset:
+
+Precision: train 0.42, test 0.10.
+AUC: train 0.97, test 0.96.
+
+
+# THREADS = 4
+*********
+ LIGHTFM TEST RESULTS
+
+Precision: train 0.51, test 0.08.
+AUC: train 0.95, test 0.92.
+*********
+Elapsed time for 100k set training: 3.46 secs
+Elapsed time for big set loading: 17.83 secs
+Elapsed time for big set training: 5.22 secs
+Elapsed time for big set testing: 9.28 secs
+*****
+Ratings big dataset:
+
+Precision: train 0.43, test 0.10.
+AUC: train 0.97, test 0.96.
+
+
+# THREADS = 5
+*********
+ LIGHTFM TEST RESULTS
+
+Precision: train 0.51, test 0.08.
+AUC: train 0.95, test 0.92.
+*********
+Elapsed time for 100k set training: 3.77 secs
+Elapsed time for big set loading: 18.41 secs
+Elapsed time for big set training: 5.62 secs
+Elapsed time for big set testing: 10.48 secs
+*****
+Ratings big dataset:
+
+Precision: train 0.43, test 0.10.
+AUC: train 0.97, test 0.96.
+
+
+# THREADS = 6
+*********
+ LIGHTFM TEST RESULTS
+
+Precision: train 0.52, test 0.08.
+AUC: train 0.95, test 0.92.
+*********
+Elapsed time for 100k set training: 3.35 secs
+Elapsed time for big set loading: 17.35 secs
+Elapsed time for big set training: 5.06 secs
+Elapsed time for big set testing: 9.47 secs
+*****
+Ratings big dataset:
+
+Precision: train 0.43, test 0.10.
+AUC: train 0.97, test 0.96.
+
+
+# THREADS = 8
+*********
+ LIGHTFM TEST RESULTS
+
+Precision: train 0.52, test 0.08.
+AUC: train 0.95, test 0.92.
+*********
+Elapsed time for 100k set training: 3.50 secs
+Elapsed time for big set loading: 18.00 secs
+Elapsed time for big set training: 4.71 secs
+Elapsed time for big set testing: 8.01 secs
+*****
+Ratings big dataset:
+
+Precision: train 0.44, test 0.10.
+AUC: train 0.97, test 0.96.

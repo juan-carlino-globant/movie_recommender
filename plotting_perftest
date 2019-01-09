@@ -1,0 +1,9 @@
+# Execution times for different number of threads
+# threads training testing
+1 13.44 33.95
+2 8.31 17.52
+3 6.19 12.24
+4 5.22 9.28
+5 5.62 10.48
+6 5.06 9.47
+8 4.71 8.01
