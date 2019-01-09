@@ -210,7 +210,8 @@ def clusterer(items_rep):
 def cluster_classif(items_rep,test_n_ratings):
 
     file = pd.read_csv("movies.csv")
-    ratfile = pd.read_csv("ratings.csv")
+    # ratfile = pd.read_csv("ratings.csv")
+    ratfile = pd.read_csv("new_dataset")
     ratfile = ratfile.iloc[:test_n_ratings]
     # ratfile = ratfile[ table['rating']>2.5 ]
     movies_ids = ratfile['movieId'].unique()

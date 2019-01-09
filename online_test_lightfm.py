@@ -7,7 +7,8 @@ def load_data(n_ratings):
     # n_ratings = 500000
 
     # Load the file into a dataframe
-    table = pd.read_csv("ratings.csv")
+    # table = pd.read_csv("ratings.csv")
+    table = pd.read_csv("new_dataset")
     table = table.iloc[:n_ratings].copy()
     # table = table[ table['rating']>2.5 ]
     table = table[['userId','movieId','rating']]
