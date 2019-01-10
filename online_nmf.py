@@ -16,11 +16,11 @@ import os
 def training():
 
     # path to dataset file
-    file_path = os.path.expanduser('./ratings.csv')
+    file_path = os.path.expanduser('./new_dataset')
 
     # As we're loading a custom dataset, we need to define a reader. In the
     # movielens-100k dataset, each line has the following format:
-    # 'user item rating timestamp', separated by '\t' characters.
+    # 'user item rating '
     reader = Reader(line_format='user item rating', sep=',', rating_scale=(1, 5), skip_lines=1)
 
     start = time.time()
@@ -35,13 +35,17 @@ def training():
     algo.fit(trainset)
     end = time.time()
     print("=> elapsed algorithm fit: %s secs" % (end - start))
-    #cross_validate(algo, data, measures=['RMSE', 'MAE'], cv=5, verbose=True)
+
 
     # Than predict ratings for all pairs (u, i) that are NOT in the training set.
+    print("building test set")
     start = time.time()
     testset = trainset.build_anti_testset()
+    print("fitting")
     predictions = algo.test(testset)
     end = time.time()
     print("=> elapsed predict time: %s secs" % (end - start))
+
+
 
     return predictions

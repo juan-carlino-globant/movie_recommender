@@ -13,6 +13,8 @@ app = Flask(__name__)
 api = Api(app)
 predictions = online_nmf.training()
 
+
+
 class Recommender(Resource):
     '''
     This class has only one method. It takes an user ID and the number of recommendations requested
