@@ -111,7 +111,7 @@ def dummy_reco(categorias, movies_data, labels, movies_ids, n_recos=10, word='Fa
 
         return list(set( result ))
 
-    def get_nearer(max_cats,ranks,movies_data,result):
+    def get_nearer(max_cats, ranks, movies_data, movies_ids, result):
         maxix = ranks.index(max(ranks))
         max_cats = list(categorias.keys())[maxix]
         result.extend(list(set( movies[maxix] )))
@@ -119,6 +119,7 @@ def dummy_reco(categorias, movies_data, labels, movies_ids, n_recos=10, word='Fa
         # print("maxcat",max_cats)
         # print("ranks",ranks)
         # return 1, list([1,2])
+        # return max_cats,list(set( result ))
         if (len(result) < n_recos):
             # start appending movies with the same genre, but with any title
             count = 0
@@ -129,7 +130,15 @@ def dummy_reco(categorias, movies_data, labels, movies_ids, n_recos=10, word='Fa
                 title = movies_data['title'].iloc[i]
                 movie_id = movies_data['movieId'].iloc[i]
                 index, = np.where(movies_ids == movie_id)
+                if len(index) == 0:
+                    # print("skipping")
+                    continue
+                # print("\n")
+                # print("TYPE: ",type(index))
+                # print("LEN: ",len(index))
+                # print("INDEX: ",index)
                 index = index[0]
+                # print("\n")
 
                 if (max_cats == labels[index]):
                     result.append(title)
@@ -144,7 +153,7 @@ def dummy_reco(categorias, movies_data, labels, movies_ids, n_recos=10, word='Fa
     result = []
     max_cats = []
     # result = get_result(max_cats,ranks,result)
-    max_cats,result = get_nearer(max_cats,ranks,movies_data,result)
+    max_cats,result = get_nearer(max_cats,ranks,movies_data,movies_ids,result)
     return max_cats,result[:n_recos]
 
 #------------------------------------------------------------------------------#
@@ -212,7 +221,7 @@ def cluster_classif(items_rep,test_n_ratings):
     file = pd.read_csv("movies.csv")
     # ratfile = pd.read_csv("ratings.csv")
     ratfile = pd.read_csv("new_dataset")
-    ratfile = ratfile.iloc[:test_n_ratings]
+    #ratfile = ratfile.iloc[:test_n_ratings]
     # ratfile = ratfile[ table['rating']>2.5 ]
     movies_ids = ratfile['movieId'].unique()
     # movies_ids contains the ids of every mobie in the movies ndarray

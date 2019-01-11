@@ -24,6 +24,7 @@ model, data = online_lightfm.load_data()
 training_end = time.time()
 print("Elapsed time for 100k set training: %.2f secs" % (training_end-training_start))
 
+
 test_n_ratings = 2000000
 
 big_loading_start = time.time()
@@ -33,6 +34,7 @@ print("Elapsed time for big set loading: %.2f secs" % (big_loading_end-big_loadi
 
 items_rep = online_test_lightfm.get_metrics(interactions)
 
+quit()
 # categories, movies_data = online_clustering.dummy_classif()
 categories, movies_data, labels, movie_ids = online_clustering.cluster_classif(items_rep,test_n_ratings)
 
@@ -72,4 +74,4 @@ api.add_resource(Categories, '/categs')
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
