@@ -315,7 +315,8 @@ class SVD(object):
         with tf.Session(graph=self.graph) as sess:
             tf.initialize_all_variables().run()
             if verbose:
-                print("{} {} {} {}".format("step",
+                print("\n********** TRAINING IN PROGRESS **********")
+                print("{} {} {} {}".format(" step ",
                                            "batch_error",
                                            "test_error",
                                            "elapsed_time"))
@@ -363,17 +364,20 @@ class SVD(object):
                                   self.tf_rate_batch: rates}
                     pred_batch = sess.run(self.infer, feed_dict=f_dict)
                     test_error = rmse(pred_batch, rates)
+                    spaces="   "
                     if test_error < self.best_acc_test:
                         self.best_acc_test = test_error
                         marker = "*"
+                        spaces = "  "
                         self.saver.save(sess=sess, save_path=self.save_path)
 
                     end = time.time()
                     if verbose:
-                        print("{:3d} {:f} {:f}{:s} {:f}(s)".format(step,
+                        print("{:5d}  {:f}    {:f}{:s}{:s}{:f}(s)".format(step,
                                                                    train_error,
                                                                    test_error,
                                                                    marker,
+                                                                   spaces,
                                                                    end -
                                                                    start))
                     marker = ''

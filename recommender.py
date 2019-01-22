@@ -31,6 +31,7 @@ class SVDmodel(object):
                  model='svd',
                  nsvd_size='mean'):
         self.df = df
+        # self.labels_df = ldf
         self.users = users
         self.items = items
         self.ratings = ratings
@@ -38,7 +39,7 @@ class SVDmodel(object):
         self.size = len(df)
         self.num_of_users = max(self.df[self.users]) + 1
         self.num_of_items = max(self.df[self.items]) + 1
-        self.train, self.test, self.valid = self.data_separation()
+        self.train, self.test, self.valid, self.random_ids = self.data_separation()
         if model == 'nsvd':
             self.finder = dfFunctions.ItemFinder(df, self.users,
                                                  self.items,
@@ -56,10 +57,12 @@ class SVDmodel(object):
         random_df = self.df.iloc[random_ids].reset_index(drop=True)
         split_index = int(rows * 0.8)
         new_split = split_index + int((rows - split_index) * 0.5)
+
         df_train = random_df[0:split_index]
         df_test = random_df[split_index: new_split].reset_index(drop=True)
         df_validation = random_df[new_split:].reset_index(drop=True)
-        return df_train, df_test, df_validation
+
+        return df_train, df_test, df_validation, random_ids
 
     def training(self,
                  hp_dim,
