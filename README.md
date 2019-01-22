@@ -7,7 +7,7 @@ Implementation based on: https://github.com/felipessalvatore/Recommender
 
 Main requirements are:
 
-* Tensorflow 
+* Tensorflow
 * Numpy
 * Pandas
 
@@ -112,7 +112,7 @@ $ python svd.py -s 20000
 17000 0.900970 0.903008 1.294990(s)
 18000 0.902404 0.879164 1.277366(s)
 19000 0.875246 0.957183 1.292368(s)
- 
+
 >> The duration of the whole training with 20000 steps is 26.93 seconds,
 which is equal to:  0:0:0:26 (DAYS:HOURS:MIN:SEC)
 
@@ -126,3 +126,61 @@ which is equal to:  0:0:0:26 (DAYS:HOURS:MIN:SEC)
 [ 5.  5.  1.  1.  1.  5.  5.  5.  1.  2.]
 
 ```
+
+## API
+The new API contains the recommender algorithm. The training is automatically run when the API starts, after that, there is only one endpoint (at least for now) which can be used to request recommended movies for a certain user.
+
+### Usage
+In order to use th API the virtual env must be active. Once the environment is activated run the program by using:
+
+```
+python reco_api.py
+```
+A sample output is
+```
+$ python reco_api.py
+
+=> dataframe shape: 1000209 x 3
+(Some deprecation warnings, to be treated properly).
+********** TRAINING IN PROGRESS **********
+ step  batch_error test_error elapsed_time
+    0  4.485020    2.091566*  0.081800(s)
+ 1000  0.932317    0.913201*  0.852809(s)
+ 2000  0.905894    0.943206   0.829196(s)
+ 3000  0.935509    0.926992   0.839957(s)
+ 4000  0.891815    0.895175*  0.859693(s)
+ 5000  0.900175    0.830581*  0.831637(s)
+ 6000  0.865771    0.885482   0.826419(s)
+
+The duration of the whole training with 7000 steps is 5.94 seconds,
+which is equal to:  0:0:0:5 (DAYS:HOURS:MIN:SEC)
+******************************************
+Training users 800167
+Total users 1000209
+Movies: 3883
+******************************************
+
+
+The mean square error of the whole valid dataset is  0.9008459
+
+Using our model for 10 specific users and 10
+    movies we predicted the following score:
+[3.3169467 4.3824377 3.4254353 2.1723516 3.4878612 4.095423  4.670119
+ 2.9581535 4.39942   3.0512538]
+
+And in reality the scores are:
+[4. 3. 3. 3. 4. 4. 5. 2. 5. 5.]
+ * Serving Flask app "reco_api" (lazy loading)
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+
+```
+Once the API is running we can access its endpoint as `localhots:5000/reco` using
+a GET method and specifying `UsrID` (the ID of the user we are requesting recommendations for)
+and `n_recos`(the number of recommendations we want to get for that user).
+
+
+example for linux `curl localhost:5000/reco -d "UsrID=40" -d "n_recos=5" -X GET`
